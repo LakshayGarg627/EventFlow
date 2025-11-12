@@ -1,0 +1,109 @@
+<nav class="navbar navbar-expand-lg modern-navbar">
+  <div class="container-fluid">
+    <a class="navbar-brand brand-enhanced" href="/">
+      <div class="brand-logo-wrapper">
+        <div class="custom-logo">
+          <div class="logo-icon">E</div>
+        </div>
+      </div>
+      <span class="brand-text">EventFlow</span>
+    </a>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link nav-item-enhanced" href="/">
+          <i class="fas fa-home nav-icon"></i>
+          <span>Home</span>
+        </a>
+        <a class="nav-link nav-item-enhanced" href="/events">
+          <i class="fas fa-calendar-alt nav-icon"></i>
+          <span>Events</span>
+        </a>
+        <a class="nav-link nav-item-enhanced cta-link" href="/events/new">
+          <i class="fas fa-plus nav-icon"></i>
+          <span>Add Event</span>
+        </a>
+      </div>
+      
+      
+      <div class="navbar-nav ms-auto">
+        <div class="nav-item user-dropdown-container" style="position: relative;">
+          <div class="nav-link user-profile-btn" id="userDropdown" onclick="toggleDropdown()">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Dropdown Menu - Outside navbar -->
+<div class="user-dropdown" id="userDropdownMenu" style="
+  position: fixed;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  min-width: 200px;
+  z-index: 999999;
+  display: none;
+  padding: 10px 0;
+">
+
+<% if(!currUser){ %>
+  <a href="/signup" class="dropdown-link">
+    <i class="fas fa-user-plus"></i>
+    <span>Sign Up</span>
+  </a>
+  <a href="/login" class="dropdown-link">
+    <i class="fas fa-sign-in-alt"></i>
+    <span>Login</span>
+  </a>
+<% } %>
+  <% if(currUser){%>
+    <a href="/profile" class="dropdown-link">
+    <i class="fa-solid fa-user"></i>
+    <span>My Profile</span>
+  </a>
+  <a href="/logout" class="dropdown-link logout-link">
+    <i class="fas fa-sign-out-alt"></i>
+    <span>Logout</span>
+  </a>
+  <% } %>
+</div>
+
+<script>
+function toggleDropdown() {
+  const dropdown = document.getElementById('userDropdownMenu');
+  const button = document.getElementById('userDropdown');
+  
+  if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+    // Position dropdown below button
+    const rect = button.getBoundingClientRect();
+    const dropdownWidth = 200; // dropdown width
+    
+    // Calculate right position to avoid horizontal scroll
+    let rightPos = window.innerWidth - rect.right;
+    if (rightPos < 0) rightPos = 10; // minimum margin from screen edge
+    
+    dropdown.style.top = (rect.bottom + 5) + 'px';
+    dropdown.style.right = rightPos + 'px';
+    dropdown.style.left = 'auto';
+    dropdown.style.display = 'block';
+  } else {
+    dropdown.style.display = 'none';
+  }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  const dropdown = document.getElementById('userDropdownMenu');
+  const button = document.getElementById('userDropdown');
+  
+  if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+    dropdown.style.display = 'none';
+  }
+});
+</script>

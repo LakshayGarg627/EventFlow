@@ -1,0 +1,219 @@
+<%- layout("./layouts/boilerplate.ejs") %>
+
+<!-- Break out of container for full-width hero -->
+</div>
+
+<!-- Modern Hero Section -->
+<section class="modern-hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                #1 Event Platform in India
+            </div>
+            <h1 class="hero-main-title">
+                Discover & Create
+                <span class="gradient-text">Amazing Events</span>
+            </h1>
+            <p class="hero-description">
+                Join thousands of people creating unforgettable experiences. From workshops to festivals, 
+                find your perfect event or create your own in minutes.
+            </p>
+            <div class="hero-actions">
+                <a href="/events" class="btn-primary-new btn-secondary-new">
+                    <i class="fas fa-search"></i>
+                    Explore Events
+                </a>
+                <a href="/events/new" class="btn-secondary-new">
+                    <i class="fas fa-plus"></i>
+                    Create Event
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number"><%= allEvents ? allEvents.length : 0 %>+</span>
+                    <span class="stat-label">Events</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Cities</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-cards">
+                <div class="event-preview-card card-1">
+                    <div class="card-icon">🎵</div>
+                    <div class="card-title">Music Concert</div>
+                    <div class="card-date">Dec 25</div>
+                </div>
+                <div class="event-preview-card card-2">
+                    <div class="card-icon">🎨</div>
+                    <div class="card-title">Art Workshop</div>
+                    <div class="card-date">Jan 15</div>
+                </div>
+                <div class="event-preview-card card-3">
+                    <div class="card-icon">🏃‍♂️</div>
+                    <div class="card-title">Marathon</div>
+                    <div class="card-date">Feb 20</div>
+                </div>
+                <div class="event-preview-card card-4">
+                    <div class="card-icon">📚</div>
+                    <div class="card-title">Book Reading</div>
+                    <div class="card-date">Mar 10</div>
+                </div>
+                <div class="event-preview-card card-5">
+                    <div class="card-icon">🍳</div>
+                    <div class="card-title">Cooking Class</div>
+                    <div class="card-date">Apr 05</div>
+                </div>
+                <div class="event-preview-card card-6">
+                    <div class="card-icon">💼</div>
+                    <div class="card-title">Business Meet</div>
+                    <div class="card-date">May 12</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Resume container for other sections -->
+<div class="container">
+
+<!-- Featured Events Section -->
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header-new">
+            <h2 class="section-title-new">
+                <span class="title-highlight">Featured</span> Events
+            </h2>
+            <p class="section-subtitle-new">Don't miss out on these amazing experiences</p>
+        </div>
+        
+        <div class="events-grid">
+            <% if(allEvents && allEvents.length > 0) { %>
+                <% for(let event of allEvents.slice(-3).reverse()){ %>
+                    <div class="modern-event-card">
+                        <div class="event-image-container">
+                            <img src="<%= event.image%>" alt="<%= event.title %>" class="event-img">
+                            <div class="event-type-badge-new">
+                                <%= event.eventType %>
+                            </div>
+                            <div class="event-overlay-new">
+                                <a href="/events/<%= event._id %>" class="view-event-btn">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="event-content-new">
+                            <h3 class="event-title-new"><%= event.title %></h3>
+                            
+                            <div class="event-details-new">
+                                <div class="event-detail-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span><%= new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+                                </div>
+                                <div class="event-detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span><%= event.location %></span>
+                                </div>
+                            </div>
+                            
+                            <div class="event-footer-new">
+                                <div class="event-price-new">
+                                    <span class="price-label">Starting at</span>
+                                    <span class="price-value">₹<%= event.entryFee %></span>
+                                </div>
+                                <a href="/events/<%= event._id %>" class="event-btn-new">
+                                    View Details
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <div class="no-events-new">
+                    <div class="no-events-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <h3>No Events Yet</h3>
+                    <p>Be the first to create an amazing event in your community!</p>
+                    <a href="/events/new" class="btn-primary-new">
+                        <i class="fas fa-plus"></i>
+                        Create First Event
+                    </a>
+                </div>
+            <% } %>
+        </div>
+        
+        <div class="section-footer">
+            <a href="/events" class="view-all-btn">
+                View All Events
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-new">
+    <div class="container">
+        <div class="section-header-new">
+            <h2 class="section-title-new">How It <span class="title-highlight">Works</span></h2>
+            <p class="section-subtitle-new">Get started in just a few simple steps</p>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number-new">1</div>
+                <div class="step-icon-new">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="step-title-new">Discover</h3>
+                <p class="step-description-new">Browse through hundreds of events happening around you</p>
+            </div>
+            
+            <div class="step-connector"></div>
+            
+            <div class="step-item">
+                <div class="step-number-new">2</div>
+                <div class="step-icon-new">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <h3 class="step-title-new">Book</h3>
+                <p class="step-description-new">Secure your spot with our simple booking process</p>
+            </div>
+            
+            <div class="step-connector"></div>
+            
+            <div class="step-item">
+                <div class="step-number-new">3</div>
+                <div class="step-icon-new">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="step-title-new">Enjoy</h3>
+                <p class="step-description-new">Meet amazing people and create unforgettable memories</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Create Your Event?</h2>
+            <p class="cta-subtitle">Join thousands of event organizers who trust EventFlow</p>
+            <a href="/events/new" class="cta-button">
+                <i class="fas fa-rocket"></i>
+                Start Creating
+            </a>
+        </div>
+    </div>
+</section>

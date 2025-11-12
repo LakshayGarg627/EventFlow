@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventFlow - Sign Up</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background: linear-gradient(135deg, #7C83FF 0%, #5A67D8 100%);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .signup-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .signup-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #888;
+        }
+
+        .form-group .icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7C83FF;
+            font-size: 1.2rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7C83FF;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #5A67D8;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .login-link p {
+            color: white;
+            margin: 0;
+        }
+
+        .login-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            border-bottom-color: white;
+        }
+
+        .valid-feedback {
+            display: none;
+            color: #28a745;
+            font-size: 0.875rem;
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            width: 100%;
+        }
+
+        .invalid-feedback {
+            display: none;
+            color: #dc3545;
+            font-size: 0.875rem;
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            width: 100%;
+        }
+
+        .form-group input.is-valid {
+            border-color: #28a745;
+        }
+
+        .form-group input.is-invalid {
+            border-color: #dc3545;
+        }
+
+        .form-group input.is-valid ~ .valid-feedback {
+            display: block;
+        }
+
+        .form-group input.is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+
+        @media (max-width: 576px) {
+            .signup-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .signup-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Flash Messages -->
+    <div class="flash-container">
+        <% if(success && success.length > 0) { %>
+            <% if(Array.isArray(success)) { %>
+                <% success.forEach(function(message) { %>
+                    <div class="flash-message flash-success show" role="alert">
+                        <div class="flash-content">
+                            <div class="flash-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="flash-text">
+                                <strong>Success!</strong>
+                                <span><%= message %></span>
+                            </div>
+                            <button type="button" class="flash-close" aria-label="Close">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="flash-progress"></div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="flash-message flash-success show" role="alert">
+                    <div class="flash-content">
+                        <div class="flash-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="flash-text">
+                            <strong>Success!</strong>
+                            <span><%= success %></span>
+                        </div>
+                        <button type="button" class="flash-close" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="flash-progress"></div>
+                </div>
+            <% } %>
+        <% } %>
+
+        <% if(error && error.length > 0) { %>
+            <% if(Array.isArray(error)) { %>
+                <% error.forEach(function(message) { %>
+                    <div class="flash-message flash-error show" role="alert">
+                        <div class="flash-content">
+                            <div class="flash-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="flash-text">
+                                <strong>Error!</strong>
+                                <span><%= message %></span>
+                            </div>
+                            <button type="button" class="flash-close" aria-label="Close">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="flash-progress"></div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="flash-message flash-error show" role="alert">
+                    <div class="flash-content">
+                        <div class="flash-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="flash-text">
+                            <strong>Error!</strong>
+                            <span><%= error %></span>
+                        </div>
+                        <button type="button" class="flash-close" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="flash-progress"></div>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1><i class="fas fa-calendar-alt"></i> EventFlow</h1>
+            <p>Join us and discover amazing events</p>
+        </div>
+        
+        <form action="/signup" method="post" novalidate class="needs-validation">
+            <div class="form-group">
+                <input type="text" name="username" id="username" placeholder="Enter your username" required>
+                <i class="fas fa-user icon"></i>
+                <div class="valid-feedback">
+                    <i class="fas fa-check-circle"></i> <b>Looks Good!</b>
+                </div>
+                <div class="invalid-feedback">
+                    <i class="fas fa-exclamation-circle"></i> <b>Please enter a valid username</b>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+                <i class="fas fa-envelope icon"></i>
+                <div class="valid-feedback">
+                    <i class="fas fa-check-circle"></i> <b>Looks Good!</b>
+                </div>
+                <div class="invalid-feedback">
+                    <i class="fas fa-exclamation-circle"></i> <b>Please enter a valid email address</b>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                <i class="fas fa-lock icon"></i>
+                <i class="fas fa-eye password-toggle" onclick="togglePassword()"></i>
+                <div class="valid-feedback">
+                    <i class="fas fa-check-circle"></i> <b>Strong password!</b>
+                </div>
+                <div class="invalid-feedback">
+                    <i class="fas fa-exclamation-circle"></i> <b>Please enter a valid password</b>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+
+        <div class="login-link">
+            <p>Already have an account? <a href="/login">Sign in here</a></p>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Form validation enhancement
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+        // Real-time validation feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[required]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.checkValidity()) {
+                        this.classList.add('is-valid');
+                        this.classList.remove('is-invalid');
+                    } else {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid') && this.checkValidity()) {
+                        this.classList.add('is-valid');
+                        this.classList.remove('is-invalid');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

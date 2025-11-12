@@ -1,0 +1,911 @@
+<%- layout("./layouts/boilerplate.ejs") %>
+<body>
+    
+<div class="event-show-container">
+    <div class="row">
+        <div class="col-lg-8 col-md-12">
+            
+            <div class="event-image-container">
+                <img src="<%= event.image %>" alt="<%= event.title %>" class="event-main-image">
+                <div class="event-image-overlay">
+                    <div class="event-categories">
+                        <span class="event-type-badge"><%= event.eventType %></span>
+                        <span class="event-category-badge"><%= event.eventCategory %></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="event-content">
+                <div class="event-owner-badge">
+                    <div class="owner-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="owner-info">
+                        <span class="owner-label">Created by</span>
+                        <span class="owner-username">@<%= event.owner.username %></span>
+                    </div>
+                </div>
+                <h1 class="event-title"><%= event.title %></h1>
+                
+                <p class="event-description"><%= event.description %></p>
+            </div>
+
+            <% if(currUser){ %>
+            <div class="reviews-section">
+                <div class="reviews-header">
+                    <h3 class="reviews-title">
+                        <i class="fas fa-star reviews-icon"></i>
+                        Reviews & Ratings
+                    </h3>
+                    <div class="reviews-summary">
+                        <% if (event.reviews && event.reviews.length > 0) { %>
+                            <%
+                            const totalRating = event.reviews.reduce((sum, review) => sum + review.rating, 0);
+                            const averageRating = (totalRating / event.reviews.length).toFixed(1);
+                            const fullStars = Math.floor(averageRating);
+                            const hasHalfStar = averageRating % 1 >= 0.5;
+                            %>
+                            <div class="average-rating">
+                                <span class="rating-number"><%= averageRating %></span>
+                                <div class="rating-stars">
+                                    <% for(let i = 1; i <= 5; i++) { %>
+                                        <% if(i <= fullStars) { %>
+                                            <i class="fas fa-star"></i>
+                                        <% } else if(i === fullStars + 1 && hasHalfStar) { %>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        <% } else { %>
+                                            <i class="far fa-star"></i>
+                                        <% } %>
+                                    <% } %>
+                                </div>
+                                <span class="total-reviews">(<%= event.reviews.length %> review<%= event.reviews.length !== 1 ? 's' : '' %>)</span>
+                            </div>
+                        <% } else { %>
+                            <div class="average-rating">
+                                <span class="rating-number">0.0</span>
+                                <div class="rating-stars">
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="total-reviews">(No reviews)</span>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Add Review Form -->
+                <div class="add-review-card">
+                    <h4 class="form-title">Share Your Experience</h4>
+                    <form action="/events/<%=event.id %>/reviews" method="post" novalidate class="needs-validation review-form">
+                        <div class="rating-input-group">
+                            <label for="rating" class="form-label">Your Rating</label>
+                            <div class="star-rating-input">
+                                <input type="radio" name="review[rating]" value="5" id="star5">
+                                <label for="star5"><i class="fas fa-star"></i></label>
+                                <input type="radio" name="review[rating]" value="4" id="star4">
+                                <label for="star4"><i class="fas fa-star"></i></label>
+                                <input type="radio" name="review[rating]" value="3" id="star3">
+                                <label for="star3"><i class="fas fa-star"></i></label>
+                                <input type="radio" name="review[rating]" value="2" id="star2">
+                                <label for="star2"><i class="fas fa-star"></i></label>
+                                <input type="radio" name="review[rating]" value="1" id="star1">
+                                <label for="star1"><i class="fas fa-star"></i></label>
+                            </div>
+                            <div class="invalid-feedback" id="rating-error" style="display: none;">Please select a rating for your review</div>
+                        </div>
+                        
+                        <div class="comment-input-group">
+                            <label for="comment" class="form-label">Your Review</label>
+                            <textarea name="review[comment]" id="comment" rows="4" required class="form-control review-textarea" placeholder="Share your thoughts about this event..."></textarea>
+                            <div class="invalid-feedback">Please add some comments for your review</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-review-submit">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Review
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Existing Reviews -->
+                <div class="reviews-list">
+                    <% if (event.reviews && event.reviews.length > 0) { %>
+                        <% event.reviews.forEach((review) => { %>
+                            <%
+                            const timeAgo = Math.floor((Date.now() - new Date(review.createdAt)) / (1000 * 60 * 60 * 24));
+                            const timeText = timeAgo === 0 ? 'Today' : timeAgo === 1 ? '1 day ago' : `${timeAgo} days ago`;
+                            %>
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <div class="reviewer-info">
+                                        <div class="reviewer-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="reviewer-details">
+                                            <h5 class="reviewer-name"><%= review.author.username %></h5>
+                                            <div class="review-meta">
+                                                <div class="review-rating">
+                                                    <% for(let i = 1; i <= 5; i++) { %>
+                                                        <% if(i <= review.rating) { %>
+                                                            <i class="fas fa-star"></i>
+                                                        <% } else { %>
+                                                            <i class="far fa-star"></i>
+                                                        <% } %>
+                                                    <% } %>
+                                                </div>
+                                                <span class="review-date"><%= timeText %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="review-actions">
+                                        <form action="/events/<%=event._id%>/reviews/<%=review._id%>?_method=delete" method="POST" class="delete-review-form">
+                                            <button type="submit" class="btn btn-delete-review" onclick="return confirm('Are you sure you want to delete this review?')" title="Delete Review">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="review-content">
+                                    <p><%= review.comment %></p>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-reviews">
+                            <div class="no-reviews-icon">
+                                <i class="fas fa-comment-slash"></i>
+                            </div>
+                            <h4>No Reviews Yet</h4>
+                            <p>Be the first to share your experience about this event!</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            <% } else { %>
+            <div class="login-prompt-section">
+                <div class="login-prompt-card">
+                    <div class="login-prompt-icon">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </div>
+                    <h3 class="login-prompt-title">Join the Conversation</h3>
+                    <p class="login-prompt-message">
+                        Sign in to read and share reviews about this event. Connect with other attendees and help the community make informed decisions.
+                    </p>
+                    <div class="login-prompt-actions">
+                        <a href="/login" class="btn btn-primary login-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Sign In
+                        </a>
+                        <a href="/signup" class="btn btn-outline-primary register-btn">
+                            <i class="fas fa-user-plus"></i>
+                            Create Account
+                        </a>
+                    </div>
+                    <div class="login-prompt-features">
+                        <div class="feature-item">
+                            <i class="fas fa-star feature-icon"></i>
+                            <span>Rate events</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-comment feature-icon"></i>
+                            <span>Write reviews</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-users feature-icon"></i>
+                            <span>Connect with community</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+        </div>
+
+        <div class="col-lg-4 col-md-12">
+            <!-- Event Details Card -->
+            <div class="event-details-card">
+                <h3 class="details-heading">Event Details</h3>
+                
+                <div class="detail-item">
+                    <i class="fas fa-calendar-alt detail-icon"></i>
+                    <div class="detail-content">
+                        <span class="detail-label">Date</span>
+                        <span class="detail-value"><%= new Date(event.date).toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        }) %></span>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <i class="fas fa-map-marker-alt detail-icon"></i>
+                    <div class="detail-content">
+                        <span class="detail-label">Location</span>
+                        <span class="detail-value"><%= event.location %></span>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <i class="fas fa-ticket-alt detail-icon"></i>
+                    <div class="detail-content">
+                        <span class="detail-label">Entry Fee</span>
+                        <span class="detail-value price">₹<%= event.entryFee %></span>
+                    </div>
+                </div>
+                
+                <% if(currUser && currUser._id.equals(event.owner._id)){ %>
+                <div class="action-buttons">
+                    <form action="/events/<%=event._id%>/edit" method="get" class="action-form">
+                        <button type="submit" class="btn btn-edit">
+                            <i class="fas fa-edit"></i>
+                            Edit Event
+                        </button>
+                    </form>
+                    <form action="/events/<%=event._id%>?_method=delete" method="post" class="action-form">
+                        <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this event?')">
+                            <i class="fas fa-trash"></i>
+                            Delete Event
+                        </button>
+                    </form>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Event Owner Badge Styling */
+.event-owner-badge {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
+    border: 1px solid rgba(124, 131, 255, 0.2);
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(124, 131, 255, 0.1);
+}
+
+.event-owner-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(124, 131, 255, 0.2);
+    border-color: rgba(124, 131, 255, 0.3);
+}
+
+.owner-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #7C83FF 0%, #6B73FF 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(124, 131, 255, 0.3);
+}
+
+.owner-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.owner-label {
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.owner-username {
+    font-size: 0.95rem;
+    color: #7C83FF;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* Responsive Design for Owner Badge */
+@media (max-width: 768px) {
+    .event-owner-badge {
+        padding: 0.4rem 0.8rem;
+        gap: 0.6rem;
+    }
+    
+    .owner-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    
+    .owner-label {
+        font-size: 0.7rem;
+    }
+    
+    .owner-username {
+        font-size: 0.9rem;
+    }
+}
+
+/* Event Image Styling */
+.event-image-container {
+    position: relative;
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    height: auto;
+    min-height: auto;
+}
+
+.event-main-image {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    min-height: auto;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    border-radius: 15px;
+}
+
+.event-image-overlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+.event-categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.event-type-badge,
+.event-category-badge {
+    background: rgba(255, 255, 255, 0.9);
+    color: #7C83FF;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Image */
+@media (max-width: 768px) {
+    .event-main-image {
+        max-height: none;
+    }
+    
+    .event-image-overlay {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+    
+    .event-type-badge,
+    .event-category-badge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Reviews Section Styling */
+.reviews-section {
+    margin-top: 3rem;
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(124, 131, 255, 0.1);
+    border: 1px solid rgba(124, 131, 255, 0.1);
+}
+
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f8f9ff;
+}
+
+.reviews-title {
+    color: #333;
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reviews-icon {
+    color: #7C83FF;
+    font-size: 1.5rem;
+}
+
+.reviews-summary {
+    text-align: right;
+}
+
+.average-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rating-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #7C83FF;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 0.2rem;
+    color: #FFD700;
+    font-size: 1.2rem;
+}
+
+.total-reviews {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Add Review Form */
+.add-review-card {
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(124, 131, 255, 0.15);
+}
+
+.form-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.rating-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* Star Rating Input */
+.star-rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 0.2rem;
+    justify-content: flex-end;
+}
+
+.star-rating-input input[type="radio"] {
+    display: none;
+}
+
+.star-rating-input label {
+    font-size: 1.8rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.star-rating-input label:hover,
+.star-rating-input label:hover ~ label,
+.star-rating-input input[type="radio"]:checked ~ label {
+    color: #FFD700;
+}
+
+.review-textarea {
+    border: 2px solid #e0e6ff;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.review-textarea:focus {
+    border-color: #7C83FF;
+    box-shadow: 0 0 0 0.2rem rgba(124, 131, 255, 0.25);
+}
+
+.btn-review-submit {
+    background: linear-gradient(135deg, #7C83FF 0%, #6B73FF 100%);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+}
+
+.btn-review-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(124, 131, 255, 0.3);
+}
+
+/* Reviews List */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.review-card {
+    background: white;
+    border: 1px solid #e0e6ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 131, 255, 0.15);
+}
+
+.review-header {
+    margin-bottom: 1rem;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.reviewer-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #7C83FF;
+}
+
+.reviewer-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #7C83FF 0%, #6B73FF 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    border: 2px solid #7C83FF;
+    box-shadow: 0 2px 8px rgba(124, 131, 255, 0.3);
+}
+
+.reviewer-avatar i {
+    color: white;
+}
+
+.reviewer-name {
+    color: #333;
+    font-weight: 600;
+    margin: 0 0 0.3rem 0;
+    font-size: 1.1rem;
+}
+
+.review-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.review-rating {
+    display: flex;
+    gap: 0.2rem;
+    color: #FFD700;
+}
+
+.review-rating .far {
+    color: #ddd;
+}
+
+.review-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.review-content p {
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* No Reviews State */
+.no-reviews {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #666;
+}
+
+.no-reviews-icon i {
+    font-size: 3rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+}
+
+.no-reviews h4 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.no-reviews p {
+    color: #666;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .reviews-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .reviews-summary {
+        text-align: left;
+    }
+    
+    .star-rating-input {
+        justify-content: flex-start;
+    }
+    
+    .review-meta {
+        justify-content: flex-start;
+    }
+}
+
+/* Login Prompt Section Styling */
+.login-prompt-section {
+    margin-top: 3rem;
+    background: white;
+    border-radius: 15px;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(124, 131, 255, 0.1);
+    border: 1px solid rgba(124, 131, 255, 0.1);
+    overflow: hidden;
+}
+
+.login-prompt-card {
+    background: linear-gradient(135deg, #7C83FF 0%, #6B73FF 100%);
+    color: white;
+    text-align: center;
+    padding: 3rem 2rem;
+    position: relative;
+}
+
+.login-prompt-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="stars" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23stars)"/></svg>');
+    opacity: 0.3;
+}
+
+.login-prompt-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.login-prompt-icon {
+    margin-bottom: 1rem;
+}
+
+.login-prompt-icon i {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.login-prompt-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.login-prompt-message {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.login-prompt-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.login-btn,
+.register-btn {
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 2px solid transparent;
+}
+
+.login-btn {
+    background: white;
+    color: #7C83FF;
+    border-color: white;
+}
+
+.login-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: #7C83FF;
+    text-decoration: none;
+}
+
+.register-btn {
+    background: transparent;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.register-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+.login-prompt-features {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+}
+
+.feature-icon {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+}
+
+/* Responsive Design for Login Prompt */
+@media (max-width: 768px) {
+    .login-prompt-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .login-prompt-title {
+        font-size: 1.5rem;
+    }
+    
+    .login-prompt-message {
+        font-size: 1rem;
+    }
+    
+    .login-prompt-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .login-btn,
+    .register-btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+    
+    .login-prompt-features {
+        gap: 1rem;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .feature-item {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.querySelector('.review-form');
+    const starInputs = document.querySelectorAll('input[name="review[rating]"]');
+    const ratingError = document.getElementById('rating-error');
+    const starContainer = document.querySelector('.star-rating-input');
+    
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', function(event) {
+            let isRatingSelected = false;
+            
+            // Check if any star is selected
+            starInputs.forEach(input => {
+                if (input.checked) {
+                    isRatingSelected = true;
+                }
+            });
+            
+            if (!isRatingSelected) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Show error message
+                ratingError.style.display = 'block';
+                starContainer.classList.add('is-invalid');
+                
+                // Add red border to star container
+                starContainer.style.border = '2px solid #dc3545';
+                starContainer.style.borderRadius = '8px';
+                starContainer.style.padding = '0.5rem';
+            } else {
+                // Hide error message if rating is selected
+                ratingError.style.display = 'none';
+                starContainer.classList.remove('is-invalid');
+                starContainer.style.border = 'none';
+                starContainer.style.padding = '0';
+            }
+        });
+        
+        // Hide error when user selects a star
+        starInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                ratingError.style.display = 'none';
+                starContainer.classList.remove('is-invalid');
+                starContainer.style.border = 'none';
+                starContainer.style.padding = '0';
+            });
+        });
+    }
+});
+</script>

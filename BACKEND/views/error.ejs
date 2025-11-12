@@ -1,0 +1,266 @@
+<%- layout("./layouts/boilerplate.ejs") %>
+
+<div class="error-page">
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-lg-6 col-md-8 col-sm-10">
+                <div class="error-card">
+                    <div class="error-icon">
+                        <% if (statusCode == 404) { %>
+                            <i class="fas fa-search"></i>
+                        <% } else if (statusCode == 500) { %>
+                            <i class="fas fa-exclamation-triangle"></i>
+                        <% } else if (statusCode == 403) { %>
+                            <i class="fas fa-ban"></i>
+                        <% } else { %>
+                            <i class="fas fa-bug"></i>
+                        <% } %>
+                    </div>
+                    
+                    <div class="error-content">
+                        <h1 class="error-title">
+                            <% if (statusCode == 404) { %>
+                                Oops! Page Not Found
+                            <% } else if (statusCode == 500) { %>
+                                Something Went Wrong
+                            <% } else if (statusCode == 403) { %>
+                                Access Forbidden
+                            <% } else { %>
+                                Unexpected Error
+                            <% } %>
+                        </h1>
+                        
+                        <div class="error-code">
+                            Error <%= statusCode || 500 %>
+                        </div>
+                        
+                        <p class="error-message">
+                            <%= message || "An unexpected error occurred. Please try again later." %>
+                        </p>
+                        
+                        <div class="error-actions">
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home"></i>
+                                Go Home
+                            </a>
+                            <a href="/events" class="btn btn-outline-primary">
+                                <i class="fas fa-calendar-alt"></i>
+                                Browse Events
+                            </a>
+                        </div>
+                        
+                        <div class="error-help">
+                            <p class="help-text">
+                                <i class="fas fa-lightbulb"></i>
+                                <strong>What can you do?</strong>
+                            </p>
+                            <ul class="help-list">
+                                <% if (statusCode == 404) { %>
+                                    <li>Check the URL for typos</li>
+                                    <li>Use the navigation menu to find what you're looking for</li>
+                                    <li>Visit our home page to start fresh</li>
+                                <% } else { %>
+                                    <li>Refresh the page and try again</li>
+                                    <li>Check your internet connection</li>
+                                    <li>Contact support if the problem persists</li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .row{
+        margin-top: -2rem;
+    }
+.error-page {
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    min-height: calc(100vh - 5rem);
+    padding: 0;
+}
+
+.error-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem 2rem;
+    box-shadow: 0 20px 60px rgba(124, 131, 255, 0.1);
+    text-align: center;
+    border: 1px solid rgba(124, 131, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    margin-top: 0;
+}
+
+.error-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #7C83FF 0%, #6B73FF 100%);
+}
+
+.error-icon {
+    margin-bottom: 1rem;
+}
+
+.error-icon i {
+    font-size: 5rem;
+    color: #7C83FF;
+    background: linear-gradient(135deg, #7C83FF 0%, #6B73FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+}
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #333 0%, #555 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.error-code {
+    display: inline-block;
+    background: linear-gradient(135deg, #7C83FF 0%, #6B73FF 100%);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.error-message {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+}
+
+.error-actions .btn {
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.error-actions .btn-primary {
+    background: linear-gradient(135deg, #7C83FF 0%, #6B73FF 100%);
+    border: none;
+    color: white;
+}
+
+.error-actions .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(124, 131, 255, 0.3);
+}
+
+.error-actions .btn-outline-primary {
+    border: 2px solid #7C83FF;
+    color: #7C83FF;
+    background: transparent;
+}
+
+.error-actions .btn-outline-primary:hover {
+    background: #7C83FF;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.error-help {
+    background: rgba(124, 131, 255, 0.05);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: left;
+    border-left: 4px solid #7C83FF;
+}
+
+.help-text {
+    color: #7C83FF;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.help-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.help-list li {
+    color: #666;
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.help-list li::before {
+    content: '•';
+    color: #7C83FF;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .error-card {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+    
+    .error-title {
+        font-size: 2rem;
+    }
+    
+    .error-icon i {
+        font-size: 4rem;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .error-actions .btn {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-title {
+        font-size: 1.8rem;
+    }
+    
+    .error-message {
+        font-size: 1.1rem;
+    }
+}
+</style>

@@ -1,0 +1,109 @@
+<%- layout("./layouts/boilerplate.ejs") %>
+
+<div class="new-event-page">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="form-card">
+                    <div class="form-header">
+                        <h2 class="form-title">
+                            ✏️ Edit Event
+                        </h2>
+                        <p class="form-subtitle">Update your event details</p>
+                    </div>
+                    
+                    <form action="/events/<%= event._id %>?_method=put" method="post" class="event-form needs-validation" novalidate>
+                        <div class="form-section">
+                            <h5 class="section-title">Basic Information</h5>
+                            
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Event Title</label>
+                                <input type="text" name="event[title]" value="<%= event.title %>" placeholder="Enter a catchy title for your event" class="form-control enhanced-input" required>
+                                <div class="valid-feedback"><b>Looks Good!</b></div>
+                                <div class="invalid-feedback"><b>Please Enter a Valid title.</b></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea name="event[description]" placeholder="Describe what makes your event special..." rows="4"
+                                    class="form-control enhanced-input" required><%= event.description %></textarea>
+                                <div class="invalid-feedback"><b>Please Enter a Short description.</b></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="image" class="form-label">
+                                    Event Image
+                                    <span class="optional-badge">Optional</span>
+                                </label>
+                                <input type="text" name="event[image]" value="<%= event.image %>" placeholder="Paste image URL here (we'll use a beautiful default if empty)" class="form-control enhanced-input">
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-image"></i>
+                                    Leave empty to use our default event image
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h5 class="section-title">Event Details</h5>
+                            
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label for="entryFee" class="form-label">
+                                        Entry Fee
+                                        <span class="optional-badge">Optional</span>
+                                        
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" name="event[entryFee]" value="<%= event.entryFee %>" placeholder="0" class="form-control enhanced-input" min="0">
+                                        <div class="invalid-feedback"><b>Please enter a valid fee.</b></div>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-ticket-alt"></i>
+                                        Leave empty for free event
+                                    </small>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="eventType" class="form-label">Event Type</label>
+                                    <input type="text" name="event[eventType]" value="<%= event.eventType %>" placeholder="e.g., Workshop, Conference, Concert" class="form-control enhanced-input" required>
+                                    <div class="invalid-feedback"><b>Please Enter a Valid Event-type.</b></div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="mb-3 col-md-4">
+                                    <label for="eventCategory" class="form-label">Category</label>
+                                    <input type="text" name="event[eventCategory]" value="<%= event.eventCategory %>" placeholder="e.g., Tech, Music, Sports" class="form-control enhanced-input" required>
+                                    <div class="invalid-feedback"><b>Please Enter a Valid category.</b></div>
+                                </div>
+                                <div class="mb-3 col-md-8">
+                                    <label for="location" class="form-label">Location</label>
+                                    <input type="text" name="event[location]" value="<%= event.location %>" placeholder="Enter venue or city" class="form-control enhanced-input" required>
+                                    <div class="invalid-feedback"><b>Please Enter a Valid location.</b></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="date" class="form-label">Event Date</label>
+                                <input type="date" name="event[date]" value="<%= new Date(event.date).toISOString().split('T')[0] %>" class="form-control enhanced-input" required>
+                                <div class="invalid-feedback"><b>Please Enter a Valid date.</b></div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="/events/<%= event._id %>" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-create">
+                                <i class="fas fa-save"></i>
+                                Update Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
