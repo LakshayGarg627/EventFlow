@@ -64,7 +64,7 @@ app.use((req,res,next)=>{
     res.locals.info=req.flash("info");
     res.locals.currUser=req.user;
     next();
-})
+});
 
 app.get("/",async (req,res)=>{
     const allEvents=await Event.find({});
