@@ -23,17 +23,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const flashMessages = document.querySelectorAll('.flash-message');
     
     flashMessages.forEach((message, index) => {
-        // Show animation with staggered delay
         setTimeout(() => {
             message.classList.add('show');
         }, index * 100);
-        
-        // Auto-hide after 5 seconds (unless hovered)
         let autoHideTimer = setTimeout(() => {
             hideFlashMessage(message);
         }, 5000);
-        
-        // Pause auto-hide on hover
         message.addEventListener('mouseenter', () => {
             clearTimeout(autoHideTimer);
             const progressBar = message.querySelector('.flash-progress');
@@ -41,8 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 progressBar.style.animationPlayState = 'paused';
             }
         });
-        
-        // Resume auto-hide on mouse leave
+    
         message.addEventListener('mouseleave', () => {
             const progressBar = message.querySelector('.flash-progress');
             if (progressBar) {

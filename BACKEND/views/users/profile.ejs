@@ -1,0 +1,366 @@
+<% layout("/Layouts/boilerplate") -%>
+
+<div class="container mb-5" style="margin-top: 1rem;">
+    <!-- Profile Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm profile-header-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-circle me-4">
+                            <i class="fas fa-user fa-3x"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h2 class="mb-1"><%= user.username %></h2>
+                            <p class="text-muted mb-2"><i class="fas fa-envelope me-2"></i><%= user.email %></p>
+                            <div class="d-flex gap-4 mt-3">
+                                <div>
+                                    <span class="badge badge-purple fs-6"><%= totalEvents %> Events Created</span>
+                                </div>
+                                <div>
+                                    <span class="badge badge-purple-light fs-6"><%= totalReviews %> Reviews Posted</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="profileTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab" aria-controls="events" aria-selected="true">
+                <i class="fas fa-calendar-alt me-2"></i>My Events
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                <i class="fas fa-star me-2"></i>My Reviews
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="profileTabContent">
+        <!-- My Events Tab -->
+        <div class="tab-pane fade show active" id="events" role="tabpanel" aria-labelledby="events-tab">
+            <% if(userEvents.length > 0) { %>
+                <div class="row g-4">
+                    <% for(let event of userEvents) { %>
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="event-card">
+                                <div class="event-image-wrapper">
+                                    <img src="<%= event.image %>" alt="<%= event.title %>" class="event-image">
+                                    <div class="event-overlay">
+                                        <div class="event-badges">
+                                            <span class="badge event-type-badge"><%= event.eventType %></span>
+                                            <span class="badge event-category-badge"><%= event.eventCategory %></span>
+                                        </div>
+                                        <a href="/events/<%= event._id %>" class="btn-overlay">
+                                            <i class="fas fa-eye"></i>
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="event-card-content">
+                                    <h3 class="event-card-title"><%= event.title %></h3>
+                                    
+                                    <div class="event-meta">
+                                        <div class="event-date">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span>
+                                                <% 
+                                                let date = new Date(event.date); 
+                                                let options = { 
+                                                    month: 'short', 
+                                                    day: 'numeric', 
+                                                    year: 'numeric' 
+                                                };
+                                                %>
+                                                <%= date.toLocaleDateString('en-US', options) %>
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="event-location">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span><%= event.location %></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="event-price">
+                                        <span class="price-label">Starting from</span>
+                                        <span class="price-value">₹<%= event.entryFee.toLocaleString("en-IN") %></span>
+                                    </div>
+                                    
+                                    <div class="event-card-footer">
+                                        <a href="/events/<%= event._id %>" class="btn btn-primary event-btn">
+                                            <i class="fas fa-eye"></i>
+                                            View Event
+                                        </a>
+                                        <a href="/events/<%= event._id %>/edit" class="btn btn-outline-warning event-btn">
+                                            <i class="fas fa-edit"></i>
+                                            Edit
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            <% } else { %>
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Events Created Yet</h4>
+                    <p class="text-muted">Start creating events to see them here!</p>
+                    <a href="/events/new" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus me-2"></i>Create Your First Event
+                    </a>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- My Reviews Tab -->
+        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+            <% if(reviewsWithEvents.length > 0) { %>
+                <div class="row">
+                    <div class="col-12">
+                        <% for(let item of reviewsWithEvents) { %>
+                            <% if(item.event) { %>
+                                <div class="review-card mb-4">
+                                    <div class="review-card-header">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <h5 class="review-event-title mb-2">
+                                                    <a href="/events/<%= item.event._id %>" class="event-link">
+                                                        <%= item.event.title %>
+                                                    </a>
+                                                </h5>
+                                                <div class="review-meta">
+                                                    <div class="rating-stars mb-2">
+                                                        <% for(let i = 0; i < item.review.rating; i++) { %>
+                                                            <i class="fas fa-star star-filled"></i>
+                                                        <% } %>
+                                                        <% for(let i = item.review.rating; i < 5; i++) { %>
+                                                            <i class="far fa-star star-empty"></i>
+                                                        <% } %>
+                                                        <span class="rating-text"><%= item.review.rating %>/5</span>
+                                                    </div>
+                                                    <div class="review-date">
+                                                        <i class="far fa-calendar-alt me-1"></i>
+                                                        <%= new Date(item.review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="review-card-body">
+                                        <p class="review-comment"><%= item.review.comment %></p>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="text-center py-5">
+                    <i class="fas fa-comment-slash fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Reviews Yet</h4>
+                    <p class="text-muted">Start reviewing events to see them here!</p>
+                    <a href="/events" class="btn btn-primary mt-3">
+                        <i class="fas fa-search me-2"></i>Browse Events
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const eventsTab = document.getElementById('events-tab');
+    const reviewsTab = document.getElementById('reviews-tab');
+    const eventsContent = document.getElementById('events');
+    const reviewsContent = document.getElementById('reviews');
+
+    if (eventsTab && reviewsTab && eventsContent && reviewsContent) {
+        eventsTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Update tabs
+            eventsTab.classList.add('active');
+            reviewsTab.classList.remove('active');
+            eventsTab.setAttribute('aria-selected', 'true');
+            reviewsTab.setAttribute('aria-selected', 'false');
+            
+            // Update content
+            eventsContent.classList.add('show', 'active');
+            reviewsContent.classList.remove('show', 'active');
+        });
+
+        reviewsTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Update tabs
+            reviewsTab.classList.add('active');
+            eventsTab.classList.remove('active');
+            reviewsTab.setAttribute('aria-selected', 'true');
+            eventsTab.setAttribute('aria-selected', 'false');
+            
+            // Update content
+            reviewsContent.classList.add('show', 'active');
+            eventsContent.classList.remove('show', 'active');
+        });
+    }
+});
+</script>
+
+<style>
+    .profile-header-card .card-body {
+        padding-bottom: 2rem !important;
+    }
+
+    .badge-purple {
+        background-color: #7C83FF;
+        color: white !important;
+    }
+
+    .badge-purple-light {
+        background-color: #4e5795;
+        color: white !important;
+    }
+
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+        background: #7C83FF;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .event-img {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .hover-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+
+    .nav-tabs .nav-link {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #667eea;
+        border-bottom: 3px solid #667eea;
+    }
+
+    .btn-outline-warning.event-btn {
+        color: white !important;
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+    .btn-outline-warning.event-btn:hover {
+        color: white !important;
+        background-color: #e0a800;
+        border-color: #d39e00;
+    }
+
+    /* Review Card Styles */
+    .review-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid #e8e8e8;
+    }
+
+    .review-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+
+    .review-card-header {
+        padding: 1.5rem 1.5rem 1rem;
+        background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .review-event-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #2c3e50;
+    }
+
+    .event-link {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .event-link:hover {
+        color: #5568d3;
+        text-decoration: underline;
+    }
+
+    .review-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .rating-stars {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .star-filled {
+        color: #ffc107;
+        font-size: 1.1rem;
+    }
+
+    .star-empty {
+        color: #ddd;
+        font-size: 1.1rem;
+    }
+
+    .rating-text {
+        margin-left: 8px;
+        font-weight: 600;
+        color: #667eea;
+        font-size: 0.95rem;
+    }
+
+    .review-date {
+        color: #6c757d;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .review-card-body {
+        padding: 1.5rem;
+    }
+
+    .review-comment {
+        color: #555;
+        line-height: 1.7;
+        font-size: 1rem;
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }

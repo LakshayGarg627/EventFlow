@@ -2,7 +2,10 @@ const express=require("express");
 const router=express.Router();
 const User=require("../models/user");
 const passport=require("passport");
-const { saveRedirectUrl } = require("../middleware");
+const Event=require("../models/events");
+const Review=require("../models/review");
+const wrapAsync=require("../utils/wrapAsync");
+const { saveRedirectUrl, isLoggedIn } = require("../middleware");
 
 router.get("/signup",(req,res)=>{
     res.render("users/signup.ejs");
@@ -44,7 +47,28 @@ router.get("/logout",(req,res,next)=>{
     });
 });
 
-router.get("/profile",(req,res)=>{
-    res.send("My profile page working");
-});
+router.get("/profile", isLoggedIn, wrapAsync(async(req,res)=>{
+    const userEvents = await Event.find({ owner: req.user._id }).sort({ date: -1 });
+    const userReviews = await Review.find({ author: req.user._id }).sort({ createdAt: -1 }).limit(10);
+    
+    // Get event details for reviews
+    const reviewsWithEvents = await Promise.all(
+        userReviews.map(async (review) => {
+            const event = await Event.findOne({ reviews: review._id });
+            return {
+                review,
+                event
+            };
+        })
+    );
+    
+    res.render("users/profile.ejs", { 
+        user: req.user, 
+        userEvents, 
+        reviewsWithEvents,
+        totalEvents: userEvents.length,
+        totalReviews: userReviews.length
+    });
+}));
+
 module.exports=router;
